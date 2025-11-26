@@ -5,8 +5,8 @@ import { testimonialsAPI } from '@/lib/api';
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     fetchTestimonials();
@@ -24,185 +24,320 @@ export default function Testimonials() {
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => 
-      prev === 0 ? testimonials.length - 1 : prev - 1
-    );
+    setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => 
-      prev === testimonials.length - 1 ? 0 : prev + 1
-    );
+    setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleThumbnailClick = (index) => {
+    setCurrentIndex(index);
   };
 
   if (loading) {
     return (
-      <section id="testimonials" className="section-padding" style={{ background: 'white' }}>
-        <div className="section-container" style={{ textAlign: 'center' }}>
-          <div className="spinner" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent', margin: '0 auto' }}></div>
-        </div>
+      <section style={{ minHeight: '870px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="spinner" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}></div>
       </section>
     );
   }
 
-  if (testimonials.length === 0) {
-    return null;
-  }
+  if (testimonials.length === 0) return null;
 
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section id="testimonials" className="section-padding" style={{ background: 'white' }}>
-      <div className="section-container">
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 className="heading-lg" style={{ marginBottom: '1rem' }}>
+    <section style={{
+      width: '100%',
+      padding: '80px 40px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '16px',
+    }}>
+      <div style={{
+        maxWidth: '1440px',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '60px'
+      }}>
+        {/* Header Section */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '12px',
+          textAlign: 'center',
+          maxWidth: '483px'
+        }}>
+          <h2 style={{
+            fontSize: '48px',
+            fontWeight: 600,
+            lineHeight: '120%',
+            letterSpacing: '2%',
+            color: '#23262F',
+            fontFamily: 'Manrope, sans-serif',
+            margin: 0
+          }}>
             Our Users Feel the Transformation
           </h2>
-          <p className="text-body" style={{ maxWidth: '42rem', margin: '0 auto' }}>
+          <p style={{
+            fontSize: '18px',
+            fontWeight: 500,
+            lineHeight: '160%',
+            letterSpacing: '1.2%',
+            color: '##777E90',
+            fontFamily: 'Manrope, sans-serif',
+            margin: 0,
+            opacity: 0.7
+          }}>
             Real Stories from People Empowered by Personalized Wellness
           </p>
         </div>
 
-        {/* Testimonial Carousel */}
-        <div style={{ position: 'relative', maxWidth: '56rem', margin: '0 auto' }}>
-          {/* Navigation Buttons */}
+        {/* Testimonial Card with Navigation */}
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2rem',
+          position: 'relative'
+        }}>
+          {/* Previous Button */}
           <button
             onClick={handlePrevious}
-            style={{ 
-              position: 'absolute', 
-              left: 0, 
-              top: '50%', 
-              transform: 'translate(-1rem, -50%)',
-              width: '3rem', 
-              height: '3rem', 
-              borderRadius: '9999px', 
-              border: '2px solid rgb(209 213 219)', 
-              background: 'white',
-              display: 'flex', 
-              alignItems: 'center', 
+            style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              border: '1px solid #E5E7EB',
+              background: currentIndex > 0 ? '#FFFFFF' : '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              zIndex: 10,
-              transition: 'all 0.2s'
+              transition: 'all 0.3s',
+              flexShrink: 0
             }}
-            className="nav-btn-left"
-            aria-label="Previous testimonial"
-          >
-            <svg style={{ width: '1.5rem', height: '1.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          <button
-            onClick={handleNext}
-            style={{ 
-              position: 'absolute', 
-              right: 0, 
-              top: '50%', 
-              transform: 'translate(1rem, -50%)',
-              width: '3rem', 
-              height: '3rem', 
-              borderRadius: '9999px', 
-              background: 'var(--color-primary)',
-              border: 'none',
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              cursor: 'pointer',
-              zIndex: 10,
-              transition: 'all 0.2s'
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#3772FF';
             }}
-            className="nav-btn-right"
-            aria-label="Next testimonial"
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#FFFFFF';
+            }}
           >
-            <svg style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="#23262F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
 
           {/* Testimonial Card */}
-          <div className="card animate-fade-in" key={currentIndex} style={{ padding: '2rem' }} className="testimonial-card">
-            <div style={{ textAlign: 'center' }}>
-              {/* Quote */}
-              <p style={{ fontSize: '1.125rem', color: 'var(--color-text-primary)', lineHeight: '1.75', marginBottom: '2rem' }} className="testimonial-text">
-                "{currentTestimonial.testimonial}"
-              </p>
+          <div style={{
+            maxWidth: '740px',
+            width: '100%',
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '48px',
+            boxShadow: '0 4px 24px rgba(0, 0, 0, 0.08)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '32px'
+          }}>
+            {/* Quote Text */}
+            <p style={{
+              fontSize: '18px',
+              fontWeight: 500,
+              lineHeight: '160%',
+              letterSpacing: '-0.012em',
+              color: '#23262F',
+              fontFamily: 'Manrope, sans-serif',
+              textAlign: 'center',
+              margin: 0
+            }}>
+              "{currentTestimonial.testimonial}"
+            </p>
 
-              {/* Author */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ width: '4rem', height: '4rem', borderRadius: '9999px', background: 'linear-gradient(to bottom right, rgb(251 146 60), rgb(251 191 36))' }}></div>
-                <div>
-                  <p style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                    {currentTestimonial.name}
-                    {currentTestimonial.role && `, ${currentTestimonial.role}`}
-                  </p>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-                    {currentTestimonial.company || 'Empowered by AI Wellness Journeys'}
-                  </p>
-                </div>
+            {/* Author Info */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px'
+            }}>
+              {/* Avatar */}
+              <div style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '50%',
+                background: '#808080',
+                border: '2px solid white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+              </div>
+
+              {/* Name and Title */}
+              <div style={{ textAlign: 'left' }}>
+                <p style={{
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  lineHeight: '160%',
+                  color: '#23262F',
+                  fontFamily: 'Manrope, sans-serif',
+                  margin: 0
+                }}>
+                  {currentTestimonial.name}
+                </p>
+                <p style={{
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  lineHeight: '160%',
+                  color: '#909DA2',
+                  fontFamily: 'Manrope, sans-serif',
+                  margin: 0
+                }}>
+                  {
+                     currentTestimonial.company}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Thumbnails */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-            {testimonials.slice(0, 3).map((testimonial, index) => (
-              <button
-                key={testimonial._id}
-                onClick={() => setCurrentIndex(index)}
-                style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  gap: '0.5rem', 
-                  padding: '0.75rem', 
-                  borderRadius: '0.5rem',
-                  background: index === currentIndex ? 'rgb(243 244 246)' : 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'background 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgb(243 244 246)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = index === currentIndex ? 'rgb(243 244 246)' : 'transparent'}
-              >
-                <div style={{ width: '3rem', height: '3rem', borderRadius: '9999px', background: 'linear-gradient(to bottom right, rgb(251 146 60), rgb(251 191 36))' }}></div>
-                <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>
-                    {testimonial.name.split(',')[0]}
-                  </p>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
-                    {testimonial.rating} Star Rated
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+          {/* Next Button */}
+          <button
+            onClick={handleNext}
+            style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              border: 'none',
+              background: '#2563EB',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              flexShrink: 0
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#1D4ED8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background ="#FFFFFF";
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="#23262F"  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Thumbnails */}
+        <div style={{
+          display: 'flex',
+          gap: '24px',
+          flexWrap: 'wrap',
+          justifyContent: 'center'
+        }}>
+          {testimonials.slice(0, 3).map((testimonial, index) => (
+            <button
+              key={index}
+              onClick={() => handleThumbnailClick(index)}
+              style={{
+                width: '240px',
+                height: '90px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 20px',
+                background: '#FFFFFF',
+                border: '1px solid #E5E7EB',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                opacity: index === currentIndex ? 1 : 0.5
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = index === currentIndex ? '1' : '0.5';
+              }}
+            >
+              {/* Thumbnail Avatar */}
+              <div style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '50%',
+                background: '#808080',
+                border: '2px solid white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+              </div>
+
+              {/* Thumbnail Info */}
+              <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
+                <p style={{
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  lineHeight: '160%',
+                  color: '#23262F',
+                  fontFamily: 'Manrope, sans-serif',
+                  margin: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {testimonial.name}
+                </p>
+                <p style={{
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  lineHeight: '160%',
+                  color: '#909DA2',
+                  fontFamily: 'Manrope, sans-serif',
+                  margin: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {testimonial.rating 
+                    ? `${testimonial.rating} Star Rated` 
+                    : testimonial.position}
+                </p>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
       <style jsx>{`
-        @media (min-width: 1024px) {
-          .nav-btn-left {
-            transform: translate(-4rem, -50%) !important;
+        @media (max-width: 1024px) {
+          section {
+            padding: 60px 24px !important;
           }
-          .nav-btn-right {
-            transform: translate(4rem, -50%) !important;
-          }
-          .testimonial-card {
-            padding: 3rem !important;
-          }
-          .testimonial-text {
-            font-size: 1.25rem !important;
+          
+          h2 {
+            font-size: 36px !important;
           }
         }
-        .nav-btn-left:hover,
-        .nav-btn-right:hover {
-          border-color: var(--color-primary);
-          color: var(--color-primary);
-        }
-        .nav-btn-right:hover {
-          background: var(--color-primary-600);
+
+        @media (max-width: 768px) {
+          h2 {
+            font-size: 32px !important;
+          }
+          
+          p {
+            font-size: 16px !important;
+          }
         }
       `}</style>
     </section>
