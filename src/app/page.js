@@ -5,7 +5,7 @@ import About from '@/components/landing/About';
 import Testimonials from '@/components/landing/Testimonials';
 import FAQ from '@/components/landing/FAQ';
 import Offer from '@/components/landing/Offer';
-// import Footer from '@/components/landing/Footer';
+import Footer from '@/components/landing/Footer';
 
 
 export default function Home() {
@@ -18,6 +18,7 @@ export default function Home() {
         <Testimonials />
         <FAQ />
         <Offer/>
+        <Footer/>
     </main>
   );
 };

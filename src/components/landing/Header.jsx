@@ -26,17 +26,21 @@ export default function Header() {
     }
   };
 
+  const handleAvatarClick = () => {
+    if (user) {
+      router.push('/admin');
+    }
+  };
+
   return (
-    <header  style={{ 
+    <header style={{ 
       width: '100%', 
-      borderBottom:'1rem',
-      borderColor:'black'
+      borderBottom: '1px solid #F9F9F9'
     }}>
       <div style={{ 
         maxWidth: '1440px', 
         margin: '0 auto', 
-        padding: '0 1rem',
-
+        padding: '0 1rem'
       }}>
         <div style={{ 
           display: 'flex', 
@@ -73,14 +77,25 @@ export default function Header() {
               // Logged In User Profile
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  {/* User Avatar */}
-                  <div style={{ 
-                    width: '48px', 
-                    height: '48px', 
-                    borderRadius: '50%', 
-                    overflow: 'hidden',
-                    position: 'relative'
-                  }}>
+                  {/* User Avatar - Clickable */}
+                  <div 
+                    onClick={handleAvatarClick}
+                    style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      borderRadius: '50%', 
+                      overflow: 'hidden',
+                      position: 'relative',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                  >
                     <Image 
                       src="/images/user.png" 
                       alt="User Avatar"
@@ -97,7 +112,7 @@ export default function Header() {
                       fontWeight: 600, 
                       lineHeight: '25px', 
                       color: '#111827',
-                      fontFamily: 'Manrope, sans-serif, inter',
+                      fontFamily: 'Manrope, sans-serif',
                       margin: 0
                     }}>
                       {user.name || user.email?.split('@')[0] || 'Admin User'}
@@ -145,7 +160,7 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-        
+              // Not Logged In - Admin Login Button
               <Link href="/admin/login" style={{ textDecoration: 'none' }}>
                 <button 
                   style={{
@@ -214,8 +229,25 @@ export default function Header() {
           >
             {user ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {/* Mobile User Profile */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem' }}>
+                {/* Mobile User Profile - Clickable */}
+                <div 
+                  onClick={handleAvatarClick}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.75rem', 
+                    padding: '0.5rem',
+                    cursor: 'pointer',
+                    borderRadius: '8px',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#F9FAFB';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}
+                >
                   <div style={{ 
                     width: '40px', 
                     height: '40px', 
@@ -224,7 +256,7 @@ export default function Header() {
                     position: 'relative'
                   }}>
                     <Image 
-                      src="/images/user-avatar.png" 
+                      src="/images/user.png" 
                       alt="User Avatar"
                       width={40}
                       height={40}
