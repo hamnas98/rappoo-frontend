@@ -1,23 +1,24 @@
-import Image from "next/image";
+import Header from '@/components/landing/Header';
+import Hero from '@/components/landing/Hero';
+import BrandSection from '@/components/landing/BrandSection';
+import About from '@/components/landing/About';
+import Testimonials from '@/components/landing/Testimonials';
+import FAQ from '@/components/landing/FAQ';
+// import CTA from '@/components/landing/CTA';
+// import Footer from '@/components/landing/Footer';
+
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <div className="section-container section-padding">
-        <div className="text-center">
-          <h1 className="heading-xl mb-6">
-            Welcome to <span className="text-gradient">Rappoo</span>
-          </h1>
-          <p className="text-body max-w-2xl mx-auto">
-            Your AI Health Coach - Coming Soon
-          </p>
-          <div className="mt-8">
-            <div className="inline-block px-6 py-3 bg-primary text-white rounded-xl">
-              Frontend Setup Complete ✓
-            </div>
-          </div>
-        </div>
-      </div>
+    <main className="min-h-screen bg-[#f8f8f8]">
+      <Header/>
+       <Hero />
+        <BrandSection />
+        <About />
+        <Testimonials />
+        <FAQ />
+        {/* <CTA />
+        <Footer/> */}
     </main>
   );
-}
+};
