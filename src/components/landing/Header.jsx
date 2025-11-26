@@ -1,89 +1,307 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Button from '@/components/ui/Button';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { isAuthenticated, getUser, logout } from '@/lib/auth';
 
-const Header = () => {
+export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      setUser(getUser());
+    }
+  }, [pathname]);
+
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to logout?')) {
+      logout();
+      setUser(null);
+      router.push('/');
+    }
+  };
 
   return (
-    <header className="w-full  border-b" style={{ borderColor: 'var(--color-border-primary)' }}>
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-4 gap-2.5 min-h-[95.76px]">
-          {/* Logo Section */}
-          <Link href="/">
-            <div className="flex items-center gap-2">
-            <img 
-              src="/images/logo-64.svg" 
-              alt="Reppoo Logo"
-              className="w-8 h-8"
-            />
-            <h1 className="text-2xl font-semibold leading-[33px] text-gray-900 font-[Manrope]">
-              Reppoo
-            </h1>
-          </div>
+    <header style={{ 
+      width: '100%', 
+    }}>
+      <div style={{ 
+        maxWidth: '1440px', 
+        margin: '0 auto', 
+        padding: '0 1rem'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          minHeight: '95.76px',
+          gap: '0.625rem'
+        }}>
+          {/* Logo */}
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Image 
+                src="/images/logo-64.svg" 
+                alt="Reppoo Logo"
+                width={30}
+                height={30}
+                priority
+              />
+              <span style={{ 
+                fontSize: '24px', 
+                fontWeight: 600, 
+                lineHeight: '33px', 
+                color: '#111827',
+                fontFamily: 'Manrope, sans-serif'
+              }}>
+                Reppoo
+              </span>
+            </div>
           </Link>
 
-          {/* Desktop Admin Login Button */}
-          <div className="hidden lg:flex items-center">
-            <Link href="/admin/login">
-              <Button
-                text="Admin login"
-                text_font_size="18px"
-                text_font_family="Manrope"
-                text_font_weight="700"
-                text_line_height="25px"
-                text_text_align="center"
-                text_color="#000000"
-                fill_background_color="#ffffff"
-                border_border="1px solid rgba(0, 0, 0, 0.07)"
-                border_border_radius="26px"
-                padding="12px 30px"
-                className="transition-all duration-200 hover:bg-gray-50 active:bg-gray-100"
-              />
-            </Link>
+          {/* Desktop - User Profile or Login Button */}
+          <div style={{ display: 'none' }} className="desktop-nav">
+            {user ? (
+              // Logged In User Profile
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  {/* User Avatar */}
+                  <div style={{ 
+                    width: '48px', 
+                    height: '48px', 
+                    borderRadius: '50%', 
+                    overflow: 'hidden',
+                    position: 'relative'
+                  }}>
+                    <Image 
+                      src="/images/user.png" 
+                      alt="User Avatar"
+                      width={48}
+                      height={48}
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  
+                  {/* User Info */}
+                  <div>
+                    <p style={{ 
+                      fontSize: '18px', 
+                      fontWeight: 600, 
+                      lineHeight: '25px', 
+                      color: '#111827',
+                      fontFamily: 'Manrope, sans-serif, inter',
+                      margin: 0
+                    }}>
+                      {user.name || user.email?.split('@')[0] || 'Admin User'}
+                    </p>
+                    <p style={{ 
+                      fontSize: '14px', 
+                      fontWeight: 400, 
+                      lineHeight: '19px', 
+                      color: '#6B7280',
+                      fontFamily: 'Manrope, sans-serif',
+                      margin: 0
+                    }}>
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    padding: '12px 30px',
+                    background: '#FFFFFF',
+                    border: '2px solid #2563EB',
+                    borderRadius: '26px',
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    lineHeight: '25px',
+                    color: '#2563EB',
+                    fontFamily: 'Manrope, sans-serif',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#2563EB';
+                    e.currentTarget.style.color = '#FFFFFF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.color = '#2563EB';
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+        
+              <Link href="/admin/login" style={{ textDecoration: 'none' }}>
+                <button 
+                  style={{
+                    padding: '12px 30px',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.07)',
+                    borderRadius: '26px',
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    lineHeight: '25px',
+                    color: '#000000',
+                    fontFamily: 'Manrope, sans-serif',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#F9FAFB';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                  }}
+                >
+                  Admin login
+                </button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <button 
-            className="flex lg:hidden p-2"
-            aria-label="Toggle menu"
             onClick={() => setMenuOpen(!menuOpen)}
+            style={{ 
+              display: 'flex',
+              padding: '0.5rem',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            className="mobile-menu-btn"
+            aria-label="Toggle menu"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              {menuOpen ? (
+                <path d="M18 6L6 18M6 6L18 18" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
+              ) : (
+                <>
+                  <path d="M3 12H21" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M3 6H21" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M3 18H21" stroke="#111827" strokeWidth="2" strokeLinecap="round"/>
+                </>
+              )}
             </svg>
           </button>
         </div>
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <nav className="lg:hidden pb-4 border-t pt-4 animate-slide-down" style={{ borderColor: 'var(--color-border-primary)' }}>
-            <Link href="/admin/login" onClick={() => setMenuOpen(false)}>
-              <Button
-                text="Admin login"
-                text_font_size="16px"
-                text_font_family="Manrope"
-                text_font_weight="600"
-                text_line_height="22px"
-                text_text_align="center"
-                text_color="#000000"
-                fill_background_color="#ffffff"
-                border_border="1px solid rgba(0, 0, 0, 0.07)"
-                border_border_radius="26px"
-                padding="10px 24px"
-                layout_width="full"
-                className="transition-all duration-200 hover:bg-gray-50 active:bg-gray-100"
-              />
-            </Link>
-          </nav>
+          <div 
+            style={{ 
+              borderTop: '1px solid #E5E7EB',
+              paddingTop: '1rem',
+              paddingBottom: '1rem'
+            }}
+            className="mobile-menu animate-slide-down"
+          >
+            {user ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Mobile User Profile */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    overflow: 'hidden',
+                    position: 'relative'
+                  }}>
+                    <Image 
+                      src="/images/user-avatar.png" 
+                      alt="User Avatar"
+                      width={40}
+                      height={40}
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  <div>
+                    <p style={{ 
+                      fontSize: '16px', 
+                      fontWeight: 600, 
+                      color: '#111827',
+                      margin: 0,
+                      fontFamily: 'Manrope, sans-serif'
+                    }}>
+                      {user.name || user.email?.split('@')[0] || 'Admin User'}
+                    </p>
+                    <p style={{ 
+                      fontSize: '12px', 
+                      color: '#6B7280',
+                      margin: 0,
+                      fontFamily: 'Manrope, sans-serif'
+                    }}>
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Mobile Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    padding: '10px 24px',
+                    background: '#FFFFFF',
+                    border: '2px solid #2563EB',
+                    borderRadius: '26px',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: '#2563EB',
+                    fontFamily: 'Manrope, sans-serif',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/admin/login" onClick={() => setMenuOpen(false)} style={{ textDecoration: 'none' }}>
+                <button
+                  style={{
+                    width: '100%',
+                    padding: '10px 24px',
+                    background: '#FFFFFF',
+                    border: '1px solid rgba(0, 0, 0, 0.07)',
+                    borderRadius: '26px',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: '#000000',
+                    fontFamily: 'Manrope, sans-serif',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Admin login
+                </button>
+              </Link>
+            )}
+          </div>
         )}
       </div>
+
+      <style jsx>{`
+        @media (min-width: 1024px) {
+          .desktop-nav {
+            display: flex !important;
+          }
+          .mobile-menu-btn {
+            display: none !important;
+          }
+        }
+      `}</style>
     </header>
   );
-};
-
-export default Header;
+}
