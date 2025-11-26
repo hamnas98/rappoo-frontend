@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 
-export default function CTA() {
+export default function Offer() {
   return (
     <section style={{ 
       position: 'relative',
@@ -46,10 +46,10 @@ export default function CTA() {
         {/* Floating Icons - Top Left */}
         <div style={{
           position: 'absolute',
-          top: '135px',
           left: '199px',
           width: '100px',
           height: '100px',
+           transform: 'rotate(13.78deg)',
           background: '#FFFFFF',
           border: '1px solid rgba(0, 0, 0, 0.05)',
           borderRadius: '20px',
@@ -70,7 +70,7 @@ export default function CTA() {
         {/* Floating Icons - Top Right */}
         <div style={{
           position: 'absolute',
-          top: '135px',
+           transform: 'rotate(-5deg)',
           right: '199px',
           width: '100px',
           height: '100px',
@@ -92,9 +92,10 @@ export default function CTA() {
         </div>
 
         {/* Floating Icons - Bottom Left */}
-        <div style={{
+        <div  style={{
           position: 'absolute',
-          bottom: '135px',
+          transform: 'rotate(12.78deg)',
+          bottom: '10px',
           left: '199px',
           width: '100px',
           height: '100px',
@@ -118,7 +119,8 @@ export default function CTA() {
         {/* Floating Icons - Bottom Right */}
         <div style={{
           position: 'absolute',
-          bottom: '135px',
+           transform: 'rotate(13.76 deg)',
+          bottom: '10px',
           right: '199px',
           width: '100px',
           height: '100px',
@@ -146,7 +148,7 @@ export default function CTA() {
           alignItems: 'center',
           gap: '2.5rem',
           maxWidth: '900px',
-          width: '100%',
+          width: '70%',
           textAlign: 'center',
           paddingTop: '4rem',
           paddingBottom: '4rem'
@@ -171,11 +173,11 @@ export default function CTA() {
             fontSize: '64px',
             fontWeight: 500,
             lineHeight: '110%',
-            letterSpacing: '-0.03em',
+            letterSpacing: '-3%',
             color: '#23262F',
             fontFamily: 'Manrope, sans-serif',
             margin: 0,
-            maxWidth: '850px'
+            maxWidth: '802px'
           }}>
             Your journey to better health starts now
           </h2>
@@ -185,7 +187,7 @@ export default function CTA() {
             fontSize: '18px',
             fontWeight: 500,
             lineHeight: '160%',
-            letterSpacing: '-0.012em',
+            letterSpacing: '-1.2%',
             color: '#777E90',
             fontFamily: 'Manrope, sans-serif',
             margin: 0,
@@ -198,7 +200,9 @@ export default function CTA() {
             display: 'flex',
             gap: '1rem',
             flexWrap: 'wrap',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            width:'393px',
+            height:'55px'
           }}>
             {/* Apple Download Button */}
             <button

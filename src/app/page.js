@@ -4,7 +4,7 @@ import BrandSection from '@/components/landing/BrandSection';
 import About from '@/components/landing/About';
 import Testimonials from '@/components/landing/Testimonials';
 import FAQ from '@/components/landing/FAQ';
-import CTA from '@/components/landing/CTA';
+import Offer from '@/components/landing/Offer';
 // import Footer from '@/components/landing/Footer';
 
 
@@ -17,7 +17,7 @@ export default function Home() {
         <About />
         <Testimonials />
         <FAQ />
-        <CTA/>
+        <Offer/>
     </main>
   );
 };
