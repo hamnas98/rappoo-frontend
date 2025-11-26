@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { aboutAPI } from '@/lib/api';
 
 export default function About() {
@@ -21,144 +22,186 @@ export default function About() {
       setLoading(false);
     }
   };
-  console.log(aboutData)
 
   if (loading) {
     return (
-      <section id="about" className="section-padding" style={{ background: 'var(--color-background)' }}>
-        <div className="section-container" style={{ textAlign: 'center' }}>
-          <div className="spinner" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent', margin: '0 auto' }}></div>
-        </div>
+      <section style={{ minHeight: '568.89px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FCFCFD' }}>
+        <div className="spinner" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}></div>
       </section>
     );
   }
 
   return (
-    <section id="about" className="section-padding" style={{ background: 'var(--color-background)' }}>
-      <div className="section-container">
-        <div style={{ display: 'grid', gap: '3rem', alignItems: 'center' }} className="about-grid">
-          {/* Left Content */}
+    <section style={{
+      width: '100%',
+      minHeight: '568.89px',
+      background: '#FCFCFD',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '4rem 1rem'
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '1300px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '3rem'
+      }} className="about-container">
+        {/* Left Section - Text Content */}
+        <div style={{
+          width: '533px',
+          maxWidth: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '48px'
+        }} className="text-content">
+          {/* Title and Subtitle */}
           <div>
-            {aboutData?.subtitle && (
-              <div style={{ marginBottom: '1rem' }}>
-                <span style={{ 
-                  color: 'var(--color-primary)', 
-                  fontWeight: 600, 
-                  fontSize: '0.875rem', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '0.05em' 
-                }}>
-                  {aboutData.subtitle}
-                </span>
-              </div>
-            )}
-            <h2 className="heading-lg" style={{ marginBottom: '1.5rem' }}>
+            {/* Main Title */}
+            <h2 style={{
+              fontSize: '48px',
+              fontWeight: 600,
+              lineHeight: '120%',
+              color: '#111827',
+              fontFamily: 'Manrope, sans-serif',
+              margin: '0 0 16px 0',
+              letterSpacing:'-2%'
+            }}>
               {aboutData?.title || 'Maximizing Your Health Potential Together'}
             </h2>
-            <p className="text-body" style={{ marginBottom: '2rem' }}>
-              {aboutData?.description || 'Your AI-powered health companion transforms the way you approach wellness, making healthy living effortless and personalized.'}
+
+            {/* Subtitle Label */}
+            <p style={{
+              fontSize: '18px',
+              fontWeight: 550,
+              lineHeight: '100%',
+              color: '#111827',
+              fontFamily: 'Manrope, sans-serif',
+              letterSpacing:'-1.2%',
+              margin: 0
+            }}>
+              {aboutData?.subtitle || 'Smart Nutrition Planning'}
             </p>
           </div>
 
-          {/* Right Content - Time Tracker Card */}
-          <div style={{ position: 'relative' }}>
-            {/* Main Card */}
-            <div className="card" style={{ padding: '2rem', maxWidth: '28rem', margin: '0 auto' }} className="about-card">
-              {/* Header */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <svg style={{ width: '1.25rem', height: '1.25rem', color: 'var(--color-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>Time Tracker</span>
-                </div>
-                <button style={{ color: 'var(--color-text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                  <svg style={{ width: '1.25rem', height: '1.25rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                  </svg>
-                </button>
-              </div>
+          {/* Description */}
+          <p style={{
+            fontSize: '18px',
+            fontWeight: 500,
+            width: '429px',
+            lineHeight: '160%',
+            color: '#6B7280',
+            fontFamily: 'Manrope, sans-serif',
+            letterSpacing:'-1.2%',
+            margin: '-25px 0 0 0',
+          }}>
+            {aboutData?.description || 'Your AI-powered health companion transforms the way you approach wellness, making healthy living effortless and personalized.'}
+          </p>
 
-              {/* Project Name */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>Design System</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '3rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>10:34</span>
-                  <span style={{ fontSize: '3rem', fontWeight: 700, color: 'var(--color-primary)' }}>:00</span>
-                  <button style={{ 
-                    marginLeft: '1rem', 
-                    width: '3rem', 
-                    height: '3rem', 
-                    background: 'var(--color-primary)', 
-                    borderRadius: '9999px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-600)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-primary)'}
-                  >
-                    <svg style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
+          {/* Read More Button */}
+          <button style={{
+            width: 'fit-content',
+            padding: '14px 32px',
+            background: '#FFFFFF',
+            border: '1px solid #E5E7EB',
+            borderRadius: '94.27px',
+            fontSize: '16px',
+            fontWeight: 600,
+            lineHeight: '22px',
+            color: '#111827',
+            fontFamily: 'Manrope, sans-serif',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#F9FAFB';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#FFFFFF';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}>
+            Read More
+          </button>
+        </div>
 
-              {/* Previous Tasks */}
-              <div>
-                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.75rem' }}>Previous Tasks</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'rgb(249 250 251)', borderRadius: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.5rem', background: 'rgba(37, 99, 235, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>⚡</span>
-                      </div>
-                      <div>
-                        <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>Loom UI Design System</p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>1:20:35</p>
-                      </div>
-                    </div>
-                    <button style={{ color: 'var(--color-text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                      <svg style={{ width: '1rem', height: '1rem' }} fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'rgb(249 250 251)', borderRadius: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.5rem', background: 'rgba(37, 99, 235, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>⚡</span>
-                      </div>
-                      <div>
-                        <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>Loom UI / UX Designer</p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>1:45:35</p>
-                      </div>
-                    </div>
-                    <button style={{ color: 'var(--color-text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                      <svg style={{ width: '1rem', height: '1rem' }} fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Right Section - Time Tracker Card */}
+        <div style={{
+          width: '544px',
+          maxWidth: '100%',
+          background: '#F4F5F6',
+          borderRadius: '20px',
+          padding: '42px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px'
+        }} className="tracker-card">
+          {/* Time Tracker Image */}
+          <div style={{
+            position: 'relative',
+            width: '460px',
+            height: '324.89px',
+            maxWidth: '100%',
+            borderRadius: '23.84px',
+            overflow: 'hidden'
+          }}>
+            <Image
+              src="/images/timer_tracker.png"
+              alt="Time Tracker"
+              width={460}
+              height={324.89}
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain'
+              }}
+            />
           </div>
         </div>
       </div>
 
       <style jsx>{`
-        @media (min-width: 1024px) {
-          .about-grid {
-            grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 1024px) {
+          .about-container {
+            flex-direction: column !important;
+            gap: 3rem !important;
           }
-          .about-card {
-            margin-left: auto !important;
+
+          .text-content {
+            width: 100% !important;
+          }
+
+          .tracker-card {
+            width: 100% !important;
+          }
+
+          h2 {
+            font-size: 36px !important;
+            line-height: 44px !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .text-content {
+            gap: 32px !important;
+          }
+
+          h2 {
+            font-size: 32px !important;
+            line-height: 40px !important;
+          }
+
+          p {
+            font-size: 16px !important;
+            line-height: 26px !important;
+          }
+
+          .tracker-card {
+            padding: 24px !important;
           }
         }
       `}</style>

@@ -27,13 +27,16 @@ export default function Header() {
   };
 
   return (
-    <header style={{ 
+    <header  style={{ 
       width: '100%', 
+      borderBottom:'1rem',
+      borderColor:'black'
     }}>
       <div style={{ 
         maxWidth: '1440px', 
         margin: '0 auto', 
-        padding: '0 1rem'
+        padding: '0 1rem',
+
       }}>
         <div style={{ 
           display: 'flex', 
