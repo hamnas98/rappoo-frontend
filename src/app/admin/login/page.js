@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authAPI } from '@/lib/api';
-import { setToken, setUser } from '@/lib/auth';
+import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 
 export default function AdminLogin() {
   const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -14,19 +15,20 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    router.push('/admin');
+    return null;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const response = await authAPI.login(formData);
-      const { token, user } = response.data.data;
-
-      setToken(token);
-      setUser(user);
-
-      router.push('/');
+      await login(formData.email, formData.password);
+      router.push('/admin');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
@@ -42,82 +44,141 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-background)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div style={{ width: '100%', maxWidth: '28rem' }}>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '1rem'
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: '1rem',
+        padding: '2.5rem',
+        width: '100%',
+        maxWidth: '400px',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+      }}>
+        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <div style={{ width: '3rem', height: '3rem', background: 'var(--color-primary)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: 'white', fontWeight: 700, fontSize: '1.5rem' }}>R</span>
-            </div>
-            <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Rappoo</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <Image 
+              src="/images/logo-64.svg" 
+              alt="Reppoo Logo"
+              width={40}
+              height={40}
+            />
+            <span style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827' }}>
+              Reppoo
+            </span>
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>Admin Login</h1>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Sign in to manage your content</p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.5rem' }}>
+            Admin Login
+          </h1>
+          <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>
+            Sign in to manage your content
+          </p>
         </div>
 
-        <div className="admin-card">
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {error && (
-              <div style={{ padding: '1rem', background: 'rgb(254 242 242)', border: '1px solid rgb(254 226 226)', borderRadius: '0.5rem' }}>
-                <p style={{ fontSize: '0.875rem', color: 'rgb(220 38 38)' }}>{error}</p>
-              </div>
-            )}
+        {/* Error Message */}
+        {error && (
+          <div style={{
+            padding: '0.75rem 1rem',
+            background: '#FEE2E2',
+            border: '1px solid #FCA5A5',
+            borderRadius: '0.5rem',
+            marginBottom: '1.5rem',
+            color: '#DC2626',
+            fontSize: '0.875rem'
+          }}>
+            {error}
+          </div>
+        )}
 
-            <div>
-              <label htmlFor="email" className="admin-label">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="admin-input"
-                placeholder="admin@rappoo.com"
-                required
-              />
-            </div>
+        {/* Login Form */}
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#374151',
+              marginBottom: '0.5rem'
+            }}>
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                outline: 'none'
+              }}
+              placeholder="admin@rappoo.com"
+            />
+          </div>
 
-            <div>
-              <label htmlFor="password" className="admin-label">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="admin-input"
-                placeholder="••••••••"
-                required
-              />
-            </div>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#374151',
+              marginBottom: '0.5rem'
+            }}>
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                outline: 'none'
+              }}
+              placeholder="••••••••"
+            />
+          </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="admin-btn admin-btn-primary"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem' }}
-            >
-              {loading ? (
-                <>
-                  <div className="spinner" style={{ borderColor: 'white', borderTopColor: 'transparent' }}></div>
-                  <span>Signing in...</span>
-                </>
-              ) : (
-                <>
-                  <svg style={{ width: '1.25rem', height: '1.25rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                  <span>Sign In</span>
-                </>
-              )}
-            </button>
-          </form>
-
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '0.75rem 1.5rem',
+              background: loading ? '#9CA3AF' : '#667eea',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.5rem',
+              fontSize: '1rem',
+              fontWeight: 600,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) e.currentTarget.style.background = '#5568d3';
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) e.currentTarget.style.background = '#667eea';
+            }}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
       </div>
     </div>
   );

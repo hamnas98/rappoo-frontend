@@ -9,6 +9,7 @@ export default function AdminDashboard() {
     testimonials: 0,
     faqs: 0,
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchStats();
@@ -27,6 +28,8 @@ export default function AdminDashboard() {
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,151 +38,266 @@ export default function AdminDashboard() {
       label: 'Hero Section',
       value: '1',
       href: '/admin/hero',
-      icon: (
-        <svg style={{ width: '2rem', height: '2rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-        </svg>
-      ),
-      color: '#2563EB',
+      icon: '🎨',
+      color: '#3772FF',
+      bgColor: '#F0F5FF'
     },
     {
       label: 'About Section',
       value: '1',
       href: '/admin/about',
-      icon: (
-        <svg style={{ width: '2rem', height: '2rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+      icon: 'ℹ️',
       color: '#10B981',
+      bgColor: '#F0FDF4'
     },
     {
       label: 'Testimonials',
       value: stats.testimonials,
       href: '/admin/testimonials',
-      icon: (
-        <svg style={{ width: '2rem', height: '2rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      ),
+      icon: '💬',
       color: '#F59E0B',
+      bgColor: '#FFFBEB'
     },
     {
       label: 'FAQs',
       value: stats.faqs,
       href: '/admin/faq',
-      icon: (
-        <svg style={{ width: '2rem', height: '2rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+      icon: '❓',
       color: '#8B5CF6',
+      bgColor: '#F5F3FF'
     },
   ];
 
-  const quickActions = [
-    { label: 'Add Testimonial', href: '/admin/testimonials', icon: '➕' },
-    { label: 'Add FAQ', href: '/admin/faq', icon: '➕' },
-    { label: 'View Website', href: '/', icon: '🌐' },
-  ];
-
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ 
+      padding: '2.5rem',
+      fontFamily: 'Manrope, sans-serif'
+    }}>
       {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>
+      <div style={{ marginBottom: '2.5rem' }}>
+        <h1 style={{ 
+          fontSize: '32px', 
+          fontWeight: 700, 
+          color: '#23262F', 
+          marginBottom: '0.5rem',
+          letterSpacing: '-0.02em'
+        }}>
           Dashboard
         </h1>
-        <p style={{ color: 'var(--color-text-secondary)' }}>
-          Welcome back! Manage your content from here.
+        <p style={{ 
+          fontSize: '16px',
+          color: '#777E90',
+          lineHeight: '160%'
+        }}>
+          Welcome back! Here's what's happening with your content.
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', marginBottom: '2rem' }} className="stats-grid">
-        {statCards.map((card) => (
-          <Link
-            key={card.href}
-            href={card.href}
-            style={{ textDecoration: 'none' }}
-          >
-            <div 
-              className="admin-card" 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '1rem',
-                transition: 'all 0.2s',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: '4px solid #E5E7EB',
+            borderTopColor: '#3772FF',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto'
+          }}></div>
+        </div>
+      ) : (
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2.5rem'
+        }}>
+          {statCards.map((card) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              style={{ textDecoration: 'none' }}
             >
-              <div style={{ 
-                width: '4rem', 
-                height: '4rem', 
-                borderRadius: '0.75rem', 
-                background: `${card.color}15`,
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                color: card.color
-              }}>
-                {card.icon}
-              </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem' }}>
+              <div 
+                style={{ 
+                  background: '#FFFFFF',
+                  borderRadius: '20px',
+                  padding: '1.75rem',
+                  border: '1px solid #E6E8EC',
+                  transition: 'all 0.3s',
+                  cursor: 'pointer',
+                  height: '100%'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.08)';
+                  e.currentTarget.style.borderColor = card.color;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = '#E6E8EC';
+                }}
+              >
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '16px',
+                  background: card.bgColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '28px',
+                  marginBottom: '1.25rem'
+                }}>
+                  {card.icon}
+                </div>
+                <p style={{ 
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#777E90',
+                  marginBottom: '0.5rem',
+                  letterSpacing: '0.02em',
+                  textTransform: 'uppercase'
+                }}>
                   {card.label}
                 </p>
-                <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                <p style={{ 
+                  fontSize: '36px',
+                  fontWeight: 700,
+                  color: '#23262F',
+                  letterSpacing: '-0.02em',
+                  margin: 0
+                }}>
                   {card.value}
                 </p>
               </div>
-              <svg style={{ width: '1.5rem', height: '1.5rem', color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="admin-card">
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '1rem' }}>
-          Quick Actions
-        </h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-          {quickActions.map((action) => (
-            <Link
-              key={action.href}
-              href={action.href}
-              className="admin-btn admin-btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
-              target={action.href === '/' ? '_blank' : undefined}
-            >
-              <span>{action.icon}</span>
-              <span>{action.label}</span>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div style={{
+        background: '#FFFFFF',
+        borderRadius: '20px',
+        padding: '2rem',
+        border: '1px solid #E6E8EC'
+      }}>
+        <h2 style={{ 
+          fontSize: '20px',
+          fontWeight: 600,
+          color: '#23262F',
+          marginBottom: '1.5rem',
+          letterSpacing: '-0.01em'
+        }}>
+          Quick Actions
+        </h2>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '1rem'
+        }}>
+          <Link
+            href="/admin/testimonials"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              padding: '1rem 1.5rem',
+              background: '#3772FF',
+              color: '#FFFFFF',
+              borderRadius: '12px',
+              textDecoration: 'none',
+              fontSize: '15px',
+              fontWeight: 600,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#2451CC';
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#3772FF';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <span>➕</span>
+            Add Testimonial
+          </Link>
+
+          <Link
+            href="/admin/faq"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              padding: '1rem 1.5rem',
+              background: '#FFFFFF',
+              color: '#23262F',
+              border: '1px solid #E6E8EC',
+              borderRadius: '12px',
+              textDecoration: 'none',
+              fontSize: '15px',
+              fontWeight: 600,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#F4F5F6';
+              e.currentTarget.style.borderColor = '#3772FF';
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#FFFFFF';
+              e.currentTarget.style.borderColor = '#E6E8EC';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <span>➕</span>
+            Add FAQ
+          </Link>
+
+          <Link
+            href="/"
+            target="_blank"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              padding: '1rem 1.5rem',
+              background: '#FFFFFF',
+              color: '#23262F',
+              border: '1px solid #E6E8EC',
+              borderRadius: '12px',
+              textDecoration: 'none',
+              fontSize: '15px',
+              fontWeight: 600,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#F4F5F6';
+              e.currentTarget.style.borderColor = '#3772FF';
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#FFFFFF';
+              e.currentTarget.style.borderColor = '#E6E8EC';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <span>🌐</span>
+            View Website
+          </Link>
         </div>
       </div>
 
       <style jsx>{`
-        @media (min-width: 640px) {
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-        @media (min-width: 1024px) {
-          .stats-grid {
-            grid-template-columns: repeat(4, 1fr) !important;
-          }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>

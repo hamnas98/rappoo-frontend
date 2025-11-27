@@ -4,24 +4,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { isAuthenticated, getUser, logout } from '@/lib/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated()) {
-      setUser(getUser());
-    }
-  }, [pathname]);
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (confirm('Are you sure you want to logout?')) {
-      logout();
-      setUser(null);
+      await logout();
       router.push('/');
     }
   };
@@ -73,7 +66,7 @@ export default function Header() {
 
           {/* Desktop - User Profile or Login Button */}
           <div style={{ display: 'none' }} className="desktop-nav">
-            {user ? (
+            {isAuthenticated && user ? (
               // Logged In User Profile
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -227,7 +220,7 @@ export default function Header() {
             }}
             className="mobile-menu animate-slide-down"
           >
-            {user ? (
+            {isAuthenticated && user ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {/* Mobile User Profile - Clickable */}
                 <div 

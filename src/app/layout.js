@@ -1,5 +1,7 @@
 import { Manrope } from 'next/font/google';
 import './globals.css';
+import { AuthProvider } from '@/contexts/AuthContext';
+
 
 const manrope = Manrope({ 
   subsets: ['latin'],
@@ -17,7 +19,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <body className={manrope.className}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
