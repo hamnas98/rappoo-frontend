@@ -1,4 +1,4 @@
-// Token management
+// token management
 export const setToken = (token) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('token', token);
@@ -19,7 +19,7 @@ export const removeToken = () => {
   }
 };
 
-// User management
+// user management
 export const setUser = (user) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('user', JSON.stringify(user));
@@ -34,12 +34,12 @@ export const getUser = () => {
   return null;
 };
 
-// Check if user is authenticated
+// check if user is authenticated
 export const isAuthenticated = () => {
   return !!getToken();
 };
 
-// Logout
+// logout
 export const logout = () => {
   removeToken();
   if (typeof window !== 'undefined') {

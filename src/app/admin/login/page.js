@@ -26,7 +26,7 @@ export default function AdminLogin() {
       setToken(token);
       setUser(user);
 
-      router.push('/admin');
+      router.push('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
@@ -117,17 +117,6 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgb(239 246 255)', border: '1px solid rgb(191 219 254)', borderRadius: '0.5rem' }}>
-            <p style={{ fontSize: '0.75rem', color: 'rgb(30 64 175)', fontWeight: 500, marginBottom: '0.5rem' }}>Default Credentials:</p>
-            <p style={{ fontSize: '0.75rem', color: 'rgb(37 99 235)' }}>Email: admin@rappoo.com</p>
-            <p style={{ fontSize: '0.75rem', color: 'rgb(37 99 235)' }}>Password: Admin@123</p>
-          </div>
-        </div>
-
-        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <a href="/" style={{ fontSize: '0.875rem', color: 'var(--color-primary)', textDecoration: 'none' }}>
-            ← Back to Home
-          </a>
         </div>
       </div>
     </div>
