@@ -1,47 +1,19 @@
-// token management
-export const setToken = (token) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('token', token);
-  }
-};
+// This file is now simplified - AuthContext handles most logic
+// Keep these for backward compatibility if needed
 
-export const getToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
-  }
-  return null;
-};
-
-export const removeToken = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  }
-};
-
-// user management
-export const setUser = (user) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('user', JSON.stringify(user));
-  }
+export const isAuthenticated = () => {
+  // This will be handled by AuthContext
+  // Kept for any components still using it
+  return false; // Will be replaced by useAuth hook
 };
 
 export const getUser = () => {
-  if (typeof window !== 'undefined') {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  }
-  return null;
+  // This will be handled by AuthContext
+  return null; // Will be replaced by useAuth hook
 };
 
-// check if user is authenticated
-export const isAuthenticated = () => {
-  return !!getToken();
-};
-
-// logout
 export const logout = () => {
-  removeToken();
+  // This will be handled by AuthContext
   if (typeof window !== 'undefined') {
     window.location.href = '/admin/login';
   }

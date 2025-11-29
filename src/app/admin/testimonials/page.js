@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { testimonialsAPI } from '@/lib/api';
-import TestimonialForm from '@/components/admin/TestimonialForm';
 
 export default function TestimonialsManagement() {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    testimonial: ''
+  });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [showForm, setShowForm] = useState(false);
-  const [editingTestimonial, setEditingTestimonial] = useState(null);
 
   useEffect(() => {
     fetchTestimonials();
@@ -19,45 +23,49 @@ export default function TestimonialsManagement() {
   const fetchTestimonials = async () => {
     try {
       const response = await testimonialsAPI.getAll();
-      setTestimonials(response.data.data);
+      if (response.data.success) {
+        setTestimonials(response.data.data);
+      }
     } catch (error) {
-      console.error('Error fetching testimonials:', error);
       setMessage({ type: 'error', text: 'Failed to load testimonials' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setSaving(true);
     setMessage({ type: '', text: '' });
 
     try {
-      if (editingTestimonial) {
-        await testimonialsAPI.update(editingTestimonial._id, formData);
+      if (editingId) {
+        await testimonialsAPI.update(editingId, formData);
         setMessage({ type: 'success', text: 'Testimonial updated successfully!' });
       } else {
         await testimonialsAPI.create(formData);
-        setMessage({ type: 'success', text: 'Testimonial created successfully!' });
+        setMessage({ type: 'success', text: 'Testimonial added successfully!' });
       }
       
-      fetchTestimonials();
-      setShowForm(false);
-      setEditingTestimonial(null);
+      await fetchTestimonials();
+      resetForm();
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.message || 'Failed to save testimonial' 
-      });
+      setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to save testimonial' });
     } finally {
       setSaving(false);
     }
   };
 
   const handleEdit = (testimonial) => {
-    setEditingTestimonial(testimonial);
+    setFormData({
+      name: testimonial.name,
+      company: testimonial.company,
+      testimonial: testimonial.testimonial
+    });
+    setEditingId(testimonial._id);
     setShowForm(true);
-    setMessage({ type: '', text: '' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
@@ -66,170 +74,559 @@ export default function TestimonialsManagement() {
     try {
       await testimonialsAPI.delete(id);
       setMessage({ type: 'success', text: 'Testimonial deleted successfully!' });
-      fetchTestimonials();
+      await fetchTestimonials();
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.message || 'Failed to delete testimonial' 
-      });
+      setMessage({ type: 'error', text: 'Failed to delete testimonial' });
     }
   };
 
-  const handleCancel = () => {
+  const resetForm = () => {
+    setFormData({ name: '', company: '', testimonial: '' });
+    setEditingId(null);
     setShowForm(false);
-    setEditingTestimonial(null);
-    setMessage({ type: '', text: '' });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', display: 'flex', justifyContent: 'center' }}>
-        <div className="spinner" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}></div>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '60vh',
+        fontFamily: 'Manrope, sans-serif'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: '4px solid #E5E7EB',
+            borderTopColor: '#3772FF',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem'
+          }}></div>
+          <p style={{ color: '#777E90', fontSize: '14px' }}>Loading...</p>
+        </div>
+        <style jsx>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ 
+      padding: '2.5rem',
+      fontFamily: 'Manrope, sans-serif'
+    }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: '2.5rem',
+        flexWrap: 'wrap',
+        gap: '1rem'
+      }}>
         <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>
+          <h1 style={{ 
+            fontSize: '32px', 
+            fontWeight: 700, 
+            color: '#23262F', 
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.02em'
+          }}>
             Testimonials
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)' }}>
-            Manage customer testimonials
+          <p style={{ 
+            fontSize: '16px',
+            color: '#777E90',
+            lineHeight: '160%'
+          }}>
+            Manage customer testimonials ({testimonials.length} total)
           </p>
         </div>
+        
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="admin-btn admin-btn-primary"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            style={{
+              padding: '0.875rem 1.75rem',
+              background: '#3772FF',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              fontFamily: 'Manrope, sans-serif',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#2451CC';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(55, 114, 255, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#3772FF';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
-            <svg style={{ width: '1rem', height: '1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>Add Testimonial</span>
+            <span style={{ fontSize: '18px' }}>+</span>
+            Add Testimonial
           </button>
         )}
       </div>
 
-      {/* Message */}
+      {/* Message Alert */}
       {message.text && (
-        <div style={{ 
-          marginBottom: '1.5rem', 
-          padding: '1rem', 
-          borderRadius: '0.5rem',
-          background: message.type === 'success' ? 'rgb(240 253 244)' : 'rgb(254 242 242)',
-          border: `1px solid ${message.type === 'success' ? 'rgb(187 247 208)' : 'rgb(254 226 226)'}`
+        <div style={{
+          padding: '1rem 1.25rem',
+          borderRadius: '12px',
+          marginBottom: '2rem',
+          background: message.type === 'success' ? '#F0FDF4' : '#FEF2F2',
+          border: `1px solid ${message.type === 'success' ? '#86EFAC' : '#FCA5A5'}`,
+          color: message.type === 'success' ? '#16A34A' : '#DC2626',
+          fontSize: '14px',
+          fontWeight: 500,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem'
         }}>
-          <p style={{ 
-            fontSize: '0.875rem', 
-            color: message.type === 'success' ? 'rgb(22 101 52)' : 'rgb(220 38 38)' 
-          }}>
-            {message.text}
-          </p>
+          <span style={{ fontSize: '18px' }}>
+            {message.type === 'success' ? '✓' : '⚠'}
+          </span>
+          {message.text}
         </div>
       )}
 
-      {/* Form */}
+      {/* Add/Edit Form */}
       {showForm && (
-        <div className="admin-card" style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '1.5rem' }}>
-            {editingTestimonial ? 'Edit Testimonial' : 'Add New Testimonial'}
-          </h2>
-          <TestimonialForm
-            initialData={editingTestimonial}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-            loading={saving}
-          />
+        <div style={{
+          background: '#FFFFFF',
+          borderRadius: '20px',
+          padding: '2rem',
+          border: '1px solid #E6E8EC',
+          marginBottom: '2rem'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.5rem'
+          }}>
+            <h2 style={{
+              fontSize: '20px',
+              fontWeight: 600,
+              color: '#23262F',
+              margin: 0
+            }}>
+              {editingId ? 'Edit Testimonial' : 'Add New Testimonial'}
+            </h2>
+            <button
+              onClick={resetForm}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                color: '#777E90',
+                cursor: 'pointer',
+                padding: '0.25rem',
+                lineHeight: 1
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#23262F',
+                marginBottom: '0.5rem'
+              }}>
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="John Doe"
+                style={{
+                  width: '100%',
+                  padding: '0.875rem 1.25rem',
+                  fontSize: '15px',
+                  border: '1px solid #E6E8EC',
+                  borderRadius: '12px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  fontFamily: 'Manrope, sans-serif'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#3772FF';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(55, 114, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#E6E8EC';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#23262F',
+                marginBottom: '0.5rem'
+              }}>
+                Company
+              </label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                required
+                placeholder="Acme Corp"
+                style={{
+                  width: '100%',
+                  padding: '0.875rem 1.25rem',
+                  fontSize: '15px',
+                  border: '1px solid #E6E8EC',
+                  borderRadius: '12px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  fontFamily: 'Manrope, sans-serif'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#3772FF';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(55, 114, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#E6E8EC';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#23262F',
+                marginBottom: '0.5rem'
+              }}>
+                Testimonial
+              </label>
+              <textarea
+                name="testimonial"
+                value={formData.testimonial}
+                onChange={handleChange}
+                required
+                rows={5}
+                placeholder="This product has transformed my life..."
+                style={{
+                  width: '100%',
+                  padding: '0.875rem 1.25rem',
+                  fontSize: '15px',
+                  border: '1px solid #E6E8EC',
+                  borderRadius: '12px',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  fontFamily: 'Manrope, sans-serif',
+                  resize: 'vertical'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#3772FF';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(55, 114, 255, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#E6E8EC';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'flex-end'
+            }}>
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={saving}
+                style={{
+                  padding: '0.875rem 1.75rem',
+                  background: '#FFFFFF',
+                  color: '#23262F',
+                  border: '1px solid #E6E8EC',
+                  borderRadius: '12px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  cursor: saving ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s',
+                  fontFamily: 'Manrope, sans-serif'
+                }}
+                onMouseEnter={(e) => {
+                  if (!saving) {
+                    e.currentTarget.style.background = '#F4F5F6';
+                    e.currentTarget.style.borderColor = '#3772FF';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!saving) {
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.borderColor = '#E6E8EC';
+                  }
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                disabled={saving}
+                style={{
+                  padding: '0.875rem 1.75rem',
+                  background: saving ? '#9CA3AF' : '#3772FF',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  cursor: saving ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s',
+                  fontFamily: 'Manrope, sans-serif'
+                }}
+                onMouseEnter={(e) => {
+                  if (!saving) {
+                    e.currentTarget.style.background = '#2451CC';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(55, 114, 255, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!saving) {
+                    e.currentTarget.style.background = '#3772FF';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
+                }}
+              >
+                {saving ? 'Saving...' : editingId ? 'Update' : 'Add'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
-      {/* List */}
-      {!showForm && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {testimonials.length === 0 ? (
-            <div className="admin-card" style={{ textAlign: 'center', padding: '3rem' }}>
-              <p style={{ color: 'var(--color-text-secondary)' }}>No testimonials yet. Add your first one!</p>
-            </div>
-          ) : (
-            testimonials.map((testimonial) => (
-              <div key={testimonial._id} className="admin-card">
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                  <div style={{ width: '3rem', height: '3rem', borderRadius: '9999px', background: 'linear-gradient(to bottom right, rgb(251 146 60), rgb(251 191 36))', flexShrink: 0 }}></div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', marginBottom: '0.5rem', gap: '1rem' }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                          {testimonial.name}
-                          {testimonial.role && `, ${testimonial.role}`}
-                        </h3>
-                        {testimonial.company && (
-                          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-                            {testimonial.company}
-                          </p>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                        <button
-                          onClick={() => handleEdit(testimonial)}
-                          className="admin-btn admin-btn-secondary"
-                          style={{ padding: '0.5rem' }}
-                          title="Edit"
-                        >
-                          <svg style={{ width: '1rem', height: '1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(testimonial._id)}
-                          className="admin-btn admin-btn-danger"
-                          style={{ padding: '0.5rem' }}
-                          title="Delete"
-                        >
-                          <svg style={{ width: '1rem', height: '1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: '0.75rem', lineHeight: '1.5' }}>
-                      "{testimonial.testimonial}"
+      {/* Testimonials List */}
+      {testimonials.length === 0 ? (
+        <div style={{
+          background: '#FFFFFF',
+          borderRadius: '20px',
+          padding: '3rem',
+          border: '1px solid #E6E8EC',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '48px',
+            marginBottom: '1rem'
+          }}>
+            💬
+          </div>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: 600,
+            color: '#23262F',
+            marginBottom: '0.5rem'
+          }}>
+            No testimonials yet
+          </h3>
+          <p style={{
+            fontSize: '14px',
+            color: '#777E90',
+            marginBottom: '1.5rem'
+          }}>
+            Add your first testimonial to get started
+          </p>
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              style={{
+                padding: '0.875rem 1.75rem',
+                background: '#3772FF',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '15px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontFamily: 'Manrope, sans-serif'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#2451CC';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#3772FF';
+              }}
+            >
+              Add First Testimonial
+            </button>
+          )}
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gap: '1.5rem'
+        }}>
+          {testimonials.map((testimonial) => (
+            <div
+              key={testimonial._id}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '20px',
+                padding: '1.75rem',
+                border: '1px solid #E6E8EC',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '1rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{
+                    width: '54px',
+                    height: '54px',
+                    borderRadius: '50%',
+                    background: '#FFBC99',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px',
+                    fontWeight: 600,
+                    color: '#FFFFFF'
+                  }}>
+                    {testimonial.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 style={{
+                      fontSize: '18px',
+                      fontWeight: 600,
+                      color: '#23262F',
+                      margin: 0,
+                      marginBottom: '0.25rem'
+                    }}>
+                      {testimonial.name}
+                    </h3>
+                    <p style={{
+                      fontSize: '14px',
+                      color: '#909DA2',
+                      margin: 0
+                    }}>
+                      {testimonial.company}
                     </p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', gap: '0.25rem' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <svg
-                            key={i}
-                            style={{ width: '1rem', height: '1rem', color: i < testimonial.rating ? 'rgb(251 191 36)' : 'rgb(209 213 219)' }}
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                          </svg>
-                        ))}
-                      </div>
-                      <span style={{ 
-                        fontSize: '0.75rem', 
-                        padding: '0.25rem 0.5rem', 
-                        borderRadius: '0.25rem',
-                        background: testimonial.isActive ? 'rgb(220 252 231)' : 'rgb(254 226 226)',
-                        color: testimonial.isActive ? 'rgb(22 101 52)' : 'rgb(220 38 38)'
-                      }}>
-                        {testimonial.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
-                        Order: {testimonial.order}
-                      </span>
-                    </div>
                   </div>
                 </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => handleEdit(testimonial)}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      background: '#F0F5FF',
+                      color: '#3772FF',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontFamily: 'Manrope, sans-serif'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#3772FF';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#F0F5FF';
+                      e.currentTarget.style.color = '#3772FF';
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(testimonial._id)}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      background: '#FEF2F2',
+                      color: '#DC2626',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontFamily: 'Manrope, sans-serif'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#DC2626';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#FEF2F2';
+                      e.currentTarget.style.color = '#DC2626';
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            ))
-          )}
+
+              <p style={{
+                fontSize: '15px',
+                color: '#23262F',
+                lineHeight: '160%',
+                letterSpacing: '-0.012em',
+                margin: 0
+              }}>
+                "{testimonial.testimonial}"
+              </p>
+            </div>
+          ))}
         </div>
       )}
     </div>
